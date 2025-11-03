@@ -23,7 +23,10 @@ jobs:
   
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Hello no 1
+    - name: Checkout repository code # Best practice: always checkout first
+      uses: actions/checkout@v4      # This step checks out the code.
+  
+    - name: Say hello no 1
       run: echo $Greeting1
   
   greeting_two:
@@ -31,6 +34,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Hello no 2 with secret
-        run: echo $Greeting2 and ${{ secrets.DAY1_EXERCSISE_SECRET }}
-        #with: # Set the secret as an input
-          #super_secret: ${{ secrets.DAY1_EXERCSISE_SECRET }}   
+        run: echo {{ $env.Greeting2 }} and ${{ secrets.DAY1_EXERCSISE_SECRET }}
