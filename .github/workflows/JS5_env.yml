@@ -1,0 +1,22 @@
+# Task 2
+name: JS5 env (2)
+
+on:
+  # Only allow to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+#env variable with scope the entire workflow, by using env at the top level of the workflow file.
+env:
+ Name: john
+  
+jobs:
+  # This workflow contains a single job
+  hello_with_env:
+    # runner type
+    runs-on: ubuntu-latest
+    
+    env:
+      Greeting: Hello Hello Hi
+    steps:
+      - name: "Say hi with env"
+        run: echo "$Greeting $Name. Your repository is calle $github.repository!"
