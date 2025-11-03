@@ -1,0 +1,10 @@
+name: Hello world
+
+on: push  # Körs varje gång du gör en push till repo
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Hello World
+        run: echo "Hello world"
