@@ -4,6 +4,8 @@ import datetime as dt
 
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 API_KEY = os.getenv("open_api_key") 
 
@@ -37,6 +39,9 @@ def get_current_weather(lat, lon):
     response.raise_for_status()
     return response.json()
 
+from src.transform import transform_weather, f_to_c  # added for transformation of data-----
+
+
 
 def get_historical_weather(lat, lon, date):
     timestamp = int(date.timestamp())
@@ -61,17 +66,25 @@ if __name__ == "__main__":
     
     current_weather = get_current_weather(lat, lon)
 
+    weather = transform_weather(current_weather)# added new Nosh
+    temp_c = weather["temperature_c"]# added new Nosh
+    feels_like_c = weather["feels_like_c"]# added new Nosh
+
     temp = current_weather['main']['temp']
     feels_like = current_weather['main']['feels_like']
     clouds = current_weather['weather'][0]['description']
     precipitation = current_weather.get('rain', {}).get('1h', 0)
     today = dt.datetime.now().date()
+    
+    
 
 
     print(f"Weather in {city} on {today}:")
     print(f"Temperature: {temp}°F, Feels like: {feels_like}°F,")
     print(f"Conditions: {clouds},")
     print(f"Precipitation: {precipitation}, mm")
+    print(f"Temperature: {temp}°F ({temp_c}°C), Feels like: {feels_like}°F ({feels_like_c}°C),") # added newly Nosh
+
 
 
 
