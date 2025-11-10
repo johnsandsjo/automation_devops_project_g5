@@ -1,7 +1,7 @@
 import pytest
 from weather_app.api_call import get_coordinates, get_current_weather
 
-pytestmark = pytest.mark.integration 
+#pytestmark = pytest.mark.integration
 
 def test_geocode_returns_coords():
     lat, lon = get_coordinates("Stockholm")
