@@ -8,20 +8,23 @@ on:
 
   #pipeline can be started manually
   workflow_dispatch:
+    inputs:
+      failed_test:
+        description: 'If true, failed tests will be saved to a log file. Otherwise this step is skipped and proceed to build'
+        type: boolean
+        required: true
+        default: false
 
 env:
   OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
 
 jobs:
   test:
-  #---------------------------------------------------------------------------------------------------------
-  #------------------------------------TEST RUN ------------------------------------------------------------
-  #---------------------------------------------------------------------------------------------------------
+    name: "Job #1 - Tests"
+  #----------------------------------------------------------------------------------
+  #----------------------------JOB #1 - TEST RUN ------------------------------------
+  #----------------------------------------------------------------------------------
     runs-on: ubuntu-latest
-    
-    env:
-        TEST_LOG_DIR: "test_run_failures"
-        TEST_LOG_FILE: "test_${{ github.job }}.xml"
         
     steps:
     - name: Checkout repo code
@@ -42,27 +45,45 @@ jobs:
         # making sure pytest finds the root and path to weather_app
         export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
-        pytest 
-        # 2. Immediately capture the last command's exit code in a variable
-        TEST_RESULT_CODE=$?
-        # 3. Echo the result for learning
-        echo "The exit code from Pytest was: $TEST_RESULT_CODE"
-        # 4. Now, exit with the original code so the step fails/succeeds correctly
-        echo pytest_success.log
-        echo pytest_errors.log
-        echo stderr
-        exit $TEST_RESULT_CODE
-    
-    - name: Creating folder for reports (idempotent with -p)
-      run: |
-        mkdir -p ${{ env.TEST_LOG_DIR }}
+        run: pytest --junitxml=reportyyyyyyy.xml
+        continue-on-error: true
 
+    - name: Failed test report parameter
+      run: echo "The 'failed_test' parameter is set to ${{ github.event.inputs.should_deploy }}"
+
+
+  print_test_output:
+    name: "Job #2 - printing failed tests"
+    #----------------------------------------------------------------------------------
+    #----------------------------JOB #2 - Print FAILED TES RUN ------------------------
+    #----------------------------------------------------------------------------------
+    runs-on: ubuntu-latest
+    needs: test
+    # check if it was a fialed test run
+    if: ${{ github.event.inputs.failed_test_printer == 'true' }}
+    
+    env:
+      TEST_LOG_DIR: "test_run_failures"
+      TEST_LOG_FILE: "test_${{ github.job }}.xml" 
+    
+    steps:
+    - name: Generating failed test report
+      run: |
+        echo "Test failed, generating report"
+        
+    - name: Creating folder for reports (idempotent with -p)
+      run: mkdir -p failed_reports_dir
+        
+    - name: Upload Pytest Report as Artifact 📂
+      uses: actions/upload-artifact@v4
+      with:
+        name: pytest-test-report # The name you'll see on the GitHub Actions summary page
+        path: failed_reports_dir/report.xml         # The path to the file you want to upload
     #- name: Upload test report artifact
     #  uses: actions/upload-artifact@v4
     #  with:
     #    name: pytest junit report
      #   path: ${{ env.TEST_LOG_DIR }}/${{ env.TEST_LOG_FILE }} # Path to the file created in the previous step
-
 
 #vara tydliga namngivningar för bland annat workflows, jobs och steps.
 #2. Användning av environment-variabler, GitHub-kontextvariabler och GitHub Secrets (till exempel, API-nycklar och Docker-credentials).
