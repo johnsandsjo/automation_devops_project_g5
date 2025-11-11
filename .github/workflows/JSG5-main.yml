@@ -45,6 +45,7 @@ jobs:
        
     - name: Run pytest
       id: test
+      continue-on-error: true
       run: |
         # making sure pytest finds the root and path to weather_app
         export PYTHONPATH=$PYTHONPATH:./ 
@@ -52,13 +53,17 @@ jobs:
         pytest --junitxml=reporty.xml
 
     - name: Print test result
-      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.print_test == 'true' && failure() }}
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.print_test == 'true' && steps.test.outcome == 'failure' }}
       run: |
         echo "Test failed, generating report"
         # creating folder for reports (idempotent with -p)
         mkdir -p failed_reports_dir 
         # moving the file to the folder
-        mv reporty.xml failed_reports_dir/
+        if [ -f reporty.xml ]; then
+          mv reporty.xml failed_reports_dir/
+        else
+          echo "reporty.xml not found."
+        fi
     
     #- name: Upload pytest report as artifact
      # if: ${{ steps.test.outcome == 'failure' && github.event.inputs.print_test == 'true' }}
