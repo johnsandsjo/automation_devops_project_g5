@@ -42,17 +42,23 @@ jobs:
         # making sure pytest finds the root and path to weather_app
         export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
-        pytest --junitxml=${{ env.TEST_LOG_FILE }}
+        pytest 
+        # 2. Immediately capture the last command's exit code in a variable
+        TEST_RESULT_CODE=$?
+        # 3. Echo the result for learning
+        echo "The exit code from Pytest was: $TEST_RESULT_CODE"
+        # 4. Now, exit with the original code so the step fails/succeeds correctly
+        exit $TEST_RESULT_CODE
     
     - name: Creating folder for reports (idempotent with -p)
       run: |
         mkdir -p ${{ env.TEST_LOG_DIR }}
 
-    - name: Upload test report artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: pytest junit report
-        path: ${{ env.TEST_LOG_DIR }}/${{ env.TEST_LOG_FILE }} # Path to the file created in the previous step
+    #- name: Upload test report artifact
+    #  uses: actions/upload-artifact@v4
+    #  with:
+    #    name: pytest junit report
+     #   path: ${{ env.TEST_LOG_DIR }}/${{ env.TEST_LOG_FILE }} # Path to the file created in the previous step
 
 
 #vara tydliga namngivningar för bland annat workflows, jobs och steps.
