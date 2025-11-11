@@ -43,7 +43,7 @@ jobs:
         export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
         pytest --junitxml=test_run_results.xml
-        echo "$EXIT_CODE"
+        echo "Test printing exit code: $EXIT_CODE"
 
     #- name: Upload Test Report Artifact
      # uses: actions/upload-artifact@v4
