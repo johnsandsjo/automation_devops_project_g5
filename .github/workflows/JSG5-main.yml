@@ -9,6 +9,9 @@ on:
   #pipeline can be started manually
   workflow_dispatch:
 
+env:
+  API_KEY_ENV_VAR: ${{ secrets.OPEN_API_KEY }}
+
 jobs:
   test:
   #---------------------------------------------------------------------------------------------------------
