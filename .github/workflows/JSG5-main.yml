@@ -18,7 +18,11 @@ jobs:
   #------------------------------------TEST RUN ------------------------------------------------------------
   #---------------------------------------------------------------------------------------------------------
     runs-on: ubuntu-latest
-      
+    
+    env:
+        TEST_LOG_DIR: "test_run_failures"
+        TEST_LOG_FILE: "test_${{ github.job }}.xml"
+        
     steps:
     - name: Checkout repo code
       uses: actions/checkout@v4
@@ -34,24 +38,21 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run pytest
-      env:
-        TEST_LOG_DIR: ".github/workflows/test_run_failures"
-        TEST_LOG_FILE: "test_${{ github.job }}.xml"
       run: |
         # making sure pytest finds the root and path to weather_app
         export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
-        pytest --junitxml=$TEST_LOG_FILE
+        pytest --junitxml=${{ env.TEST_LOG_FILE }}
     
-    - name: Add test reports to folder (idempotent with -p)
+    - name: Creating folder for reports (idempotent with -p)
       run: |
-        mkdir -p "$env.TEST_LOG_DIR"
+        mkdir -p ${{ env.TEST_LOG_DIR }}
 
     - name: Upload test report artifact
       uses: actions/upload-artifact@v4
       with:
         name: pytest junit report
-        path: "$env.TEST_LOG_DIR/$env.TEST_LOG_FILE" # Path to the file created in the previous step
+        path: ${{ env.TEST_LOG_DIR }}/${{ env.TEST_LOG_FILE }} # Path to the file created in the previous step
 
 
 #vara tydliga namngivningar för bland annat workflows, jobs och steps.
