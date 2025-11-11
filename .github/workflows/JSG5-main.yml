@@ -40,10 +40,14 @@ jobs:
     - name: Run pytest
       run: |
         # making sure pytest finds the root and path to weather_app
-        export PYTHONPATH=$PYTHONPATH:./ 
+        # export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
-        # pytest --junitxml=test_run_results.xml
-        pytest --tee console_output.txt
+        pytest --junitxml=test_run_results.xml
+    
+    - name: Add test reports to folder (idempotent with -p)
+      run: |
+        mkdir -p test_reports_dir
+        mv results.xml test_reports_dir/
 
     #- name: Upload Test Report Artifact
      # uses: actions/upload-artifact@v4
