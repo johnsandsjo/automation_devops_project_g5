@@ -45,7 +45,7 @@ jobs:
     
     - name: Add test reports to folder (idempotent with -p)
       run: |
-        mkdir -p $TEST_LOG_DIR
+        mkdir -p "$TEST_LOG_DIR"
 
     - name: Upload test report artifact
       uses: actions/upload-artifact@v4
