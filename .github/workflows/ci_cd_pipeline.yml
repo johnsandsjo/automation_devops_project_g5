@@ -3,13 +3,14 @@ name: HY Individual DevOps Pipeline
 on:
   push:
     branches:
-      - HY_individual
+      - KH_individual
   workflow_dispatch:
     inputs:
       create_log:
         description: "Generate error log if tests fail"
         required: true
         default: "false"
+
 
 jobs:
   test:
