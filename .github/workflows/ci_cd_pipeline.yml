@@ -11,8 +11,8 @@ on:
         required: true
         default: "false"
 
-
 jobs:
+  # 🧪 مرحله‌ی تست
   test:
     runs-on: ubuntu-latest
     steps:
@@ -28,9 +28,11 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run tests
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
         run: pytest --maxfail=1 --disable-warnings -q
 
-  # 🐋 مرحله ۴: ساخت و Push ایمیج Docker به DockerHub
+  # 🐋 مرحله‌ی ساخت و Push ایمیج Docker به DockerHub
   build_and_push:
     runs-on: ubuntu-latest
     needs: test   # یعنی فقط وقتی تست‌ها موفق بودن، این مرحله اجرا بشه
