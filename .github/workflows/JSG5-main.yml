@@ -16,7 +16,7 @@ on:
         default: false
 
 env:
-  OPEdN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+  OPEN_ssssAPI_KEY: ${{ secrets.OPEN_API_KEY }}
 
 jobs:
   test:
@@ -57,10 +57,10 @@ jobs:
       run: |
         echo "Test failed, generating report"
         # creating folder for reports (idempotent with -p)
-        mkdir -p failed_reports_dir 
+        mkdir -p test_reports_dir 
         # moving the file to the folder
         if [ -f reporty.xml ]; then
-          mv reporty.xml failed_reports_dir/
+          mv reporty.xml test_reports_dir/
         else
           echo "reporty.xml not found."
         fi
