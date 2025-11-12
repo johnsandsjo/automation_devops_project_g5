@@ -1,0 +1,31 @@
+name: HY Individual DevOps Pipeline
+
+on:
+  push:
+    branches:
+      - HY_individual
+  workflow_dispatch:
+    inputs:
+      create_log:
+        description: "Generate error log if tests fail"
+        required: true
+        default: "false"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest --maxfail=1 --disable-warnings -q
