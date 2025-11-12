@@ -65,15 +65,13 @@ jobs:
           pwd
           ls -al
 
-      - name: Build Docker image (fallback-safe)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
         run: |
           echo "🔧 Building Docker image..."
-          if [ -f Dockerfile ]; then
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/flask_app:latest .
-          else
-            echo "❌ No Dockerfile found in repository root!"
-            exit 1
-          fi
+          docker buildx build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/flask_app:latest -f Dockerfile .
 
       - name: Push Docker image to DockerHub
         run: |
