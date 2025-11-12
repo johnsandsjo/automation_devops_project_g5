@@ -5,18 +5,13 @@ on:
     branches:
       - KH_individual
   workflow_dispatch:
-    inputs:
-      create_log:
-        description: "Generate error log if tests fail"
-        required: true
-        default: "false"
 
 jobs:
-  # 🧪 مرحله‌ی تست
+  # 🧪 Test-jobb
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repo code
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -30,55 +25,30 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        env:
-          open_api_key: ${{ secrets.API_KEY }}
         run: pytest --maxfail=1 --disable-warnings -q
 
-  # 🐋 مرحله‌ی ساخت و Push ایمیج Docker به DockerHub
+  # 🐋 Bygg och publicera Docker-image
   build_and_push:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: Checkout code
+      - name: Checkout repo code
         uses: actions/checkout@v4
 
-      - name: Log in to DockerHub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Verify DockerHub credentials
-        run: |
-          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
-            echo "❌ DOCKER_USERNAME is empty!"
-            exit 1
-          fi
-          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
-            echo "❌ DOCKER_PASSWORD is empty!"
-            exit 1
-          fi
-          echo "✅ DockerHub credentials detected."
-
-      - name: List current directory (debug)
-        run: |
-          echo "📂 Listing directory to confirm Dockerfile location..."
-          pwd
-          ls -al
+          username: ${{ secrets.DOCKER_USERNAME }} # Lägg till i GitHub Secrets
+          password: ${{ secrets.DOCKER_PASSWORD }} # Lägg till i GitHub Secrets
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          push: false
+          push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
           platforms: linux/amd64
-
-      - name: Push Docker image to DockerHub
-        run: |
-          echo "🚀 Pushing image to DockerHub..."
-          docker push ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
