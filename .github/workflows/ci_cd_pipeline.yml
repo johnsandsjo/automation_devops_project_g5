@@ -22,15 +22,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run tests
         env:
           open_api_key: ${{ secrets.API_KEY }}
-        run: pytest --maxfail=1 --disable-warnings -q
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
 
   # 🐋 مرحله‌ی ساخت و Push ایمیج Docker به DockerHub
   build_and_push:
@@ -41,30 +44,33 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Log in to DockerHub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Verify DockerHub username
         run: |
-          echo "DockerHub username: ${{ secrets.DOCKER_USERNAME }}"
+          echo "✅ DockerHub username detected: ${{ secrets.DOCKER_USERNAME }}"
 
- 
       - name: Check DockerHub secrets
         run: |
           if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
-            echo "DOCKER_USERNAME is empty!"
+            echo "❌ DOCKER_USERNAME is empty!"
             exit 1
           fi
-          echo " DOCKER_USERNAME found: ${{ secrets.DOCKER_USERNAME }}"
+          echo "✅ DOCKER_USERNAME found: ${{ secrets.DOCKER_USERNAME }}"
           
           if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
-            echo " DOCKER_PASSWORD is empty!"
+            echo "❌ DOCKER_PASSWORD is empty!"
             exit 1
           fi
-          echo " DOCKER_PASSWORD is set (hidden for security)"
+          echo "✅ DOCKER_PASSWORD is set (hidden for security)"
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/flask_app:latest .
-
+        run: |
+          echo "🔧 Building Docker image..."
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/flask_app:latest .
 
       - name: Push Docker image to DockerHub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
+        run: |
+          echo "🚀 Pushing image to DockerHub..."
+          docker push ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
