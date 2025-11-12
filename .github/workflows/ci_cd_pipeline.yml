@@ -1,0 +1,47 @@
+name: HY Individual DevOps Pipeline
+
+on:
+  push:
+    branches:
+      - HY_individual
+  workflow_dispatch:
+    inputs:
+      create_log:
+        description: "Generate error log if tests fail"
+        required: true
+        default: "false"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest --maxfail=1 --disable-warnings -q
+
+  # 🐋 مرحله ۴: ساخت و Push ایمیج Docker به DockerHub
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: test   # یعنی فقط وقتی تست‌ها موفق بودن، این مرحله اجرا بشه
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/flask_app:latest .
+
+      - name: Push Docker image to DockerHub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
