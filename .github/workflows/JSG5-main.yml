@@ -25,9 +25,11 @@ jobs:
   #----------------------------JOB #1 - TEST RUN ------------------------------------
   #----------------------------------------------------------------------------------
     runs-on: ubuntu-latest
-    
+
     outputs:
-        pytest_outcome: ${{ steps.outcome }}
+      # Need to output the pytest true outcome due to continue-on-error: true
+      test_passed: ${{ steps.pytest.outcome }}
+    
         
     steps:
     - name: Checkout repo code
@@ -44,7 +46,7 @@ jobs:
         pip install -r requirements.txt
        
     - name: Run pytest
-      id: test
+      id: pytest
       continue-on-error: true
       run: |
         # making sure pytest finds the root and path to weather_app
@@ -80,6 +82,9 @@ jobs:
     #----------------------------------------------------------------------------------
     runs-on: ubuntu-latest
     needs: test_job
+
+    # custom condition so this job runs only if true test success
+    if: ${{ needs.test_job.outputs.test_passed == 'success' }}
     
     env:
     #name and path that the final built image in Docker Hub
