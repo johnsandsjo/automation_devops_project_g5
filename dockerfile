@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app  
 COPY requirements.txt .
-COPY .env ./.env
+#COPY .env ./.env #removing this as this only for local testing
 
 RUN pip install -r requirements.txt
 

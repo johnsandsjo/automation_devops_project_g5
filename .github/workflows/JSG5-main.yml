@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       print_test:
-        description: 'If true, failed tests will be saved to a log file. Otherwise this step is skipped and proceed to build'
+        description: 'If true, failed tests will be saved to a log file. If false, no report generated'
         type: boolean
         required: true
         default: false
@@ -19,7 +19,7 @@ env:
   OPEN_ssssAPI_KEY: ${{ secrets.OPEN_API_KEY }}
 
 jobs:
-  test:
+  test_job:
     name: "Job #1 - Tests"
   #----------------------------------------------------------------------------------
   #----------------------------JOB #1 - TEST RUN ------------------------------------
@@ -73,26 +73,44 @@ jobs:
         path: failed_reports_dir/reporty.xml         # The path to the file you want to upload
 
 
-  #print_test_output:
-   # name: "Job #2 - printing failed tests"
+  build_and_push_job:
+    name: "Job #2 - Build and push docker image to Docker Hub"
     #----------------------------------------------------------------------------------
-    #----------------------------JOB #2 - Print FAILED TES RUN ------------------------
+    #------------------------JOB #2 - Build and Push to Docker Hub --------------------
     #----------------------------------------------------------------------------------
-    #runs-on: ubuntu-latest
-    #needs: test
-  
-    #- name: Upload test report artifact
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: pytest junit report
-     #   path: ${{ env.TEST_LOG_DIR }}/${{ env.TEST_LOG_FILE }} # Path to the file created in the previous step
+    runs-on: ubuntu-latest
+    needs: test_job
+    
+    env:
+    #name and path that the final built image in Docker Hub
+      DOCKER_IMAGE: johnsandsjo91826/jsg5_weather_app
+      DOCKERFILE_PATH: ./dockerfile
 
-#vara tydliga namngivningar för bland annat workflows, jobs och steps.
-#2. Användning av environment-variabler, GitHub-kontextvariabler och GitHub Secrets (till exempel, API-nycklar och Docker-credentials).
-#3. Logik och beroenden (användning av needs och if-satser) ska användas i pipelinen.
-#parameter för att logga fel:
-#  a. Om parametern är satt till true och testerna misslyckas, ska en logg-error artefakt genereras.
-#  b. Om parametern är satt till false, skapas ingen loggfil, oavsett testresultat.
-#5. När alla tester är godkända ska pipelinen:
-#  a. Skapa en Docker-image av applikationen.
-#  b. Publicera Docker-imagen på DockerHub som är kopplad till en Azure-app service (med användning av Azure-credentials).
+    steps:
+    - name: Checkout repo code
+      uses: actions/checkout@v4
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Extract metadata (tags, labels) for Docker
+      id: metadata
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.DOCKER_IMAGE }}
+
+    - name: Build and Push Docker Image
+    # This step performs the actual build and push operation.
+      uses: docker/build-push-action@v5
+      with:
+        context: . # Path to where dockerfile is (build context)
+        file: ${{ env.DOCKERFILE_PATH }}
+        push: true # flag to tell the action to push the image to Docker Hub
+        tags: ${{ steps.metadata.outputs.tags }}
+        labels: ${{ steps.metadata.outputs.labels }}
