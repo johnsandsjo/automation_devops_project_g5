@@ -45,6 +45,20 @@ jobs:
 
       - name: Verify DockerHub username
         run: echo "DockerHub username: ${{ secrets.DOCKER_USERNAME }}"
+ 
+      - name: Check DockerHub secrets
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
+            echo "❌ DOCKER_USERNAME is empty!"
+            exit 1
+          fi
+          echo "✅ DOCKER_USERNAME found: ${{ secrets.DOCKER_USERNAME }}"
+          
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
+            echo "❌ DOCKER_PASSWORD is empty!"
+            exit 1
+          fi
+          echo "✅ DOCKER_PASSWORD is set (hidden for security)"
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/flask_app:latest .
