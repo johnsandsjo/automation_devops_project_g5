@@ -40,8 +40,7 @@ def get_current_weather(lat, lon):
     response.raise_for_status()
     return response.json()
 
-#from tests.transform import transform_weather, f_to_c  # added for transformation of data-----
-# 1
+from tests.transform import transform_weather, f_to_c  # added for transformation of data-----
 
 
 def get_historical_weather(lat, lon, date):
