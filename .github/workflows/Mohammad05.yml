@@ -72,7 +72,7 @@ jobs:
         with:
           name: pytest-report
           path: test_reports_dir/reporty.xml
-          retention-days: 5
+          retention-days: 5    #test tigger to keep the report for 5 days
     
 
 
