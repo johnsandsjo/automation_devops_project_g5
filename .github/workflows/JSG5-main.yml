@@ -2,9 +2,9 @@ name: John Sandsjö Group 5 - main workflow
 
 on:
   #pipeline starts at push
-  push:
-    branches:
-     - main
+  #push:
+   # branches:
+    # - main
 
   #pipeline can be started manually
   workflow_dispatch:
@@ -47,14 +47,18 @@ jobs:
         # making sure pytest finds the root and path to weather_app
         export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
-        pytest > test.txt
+        pytest > test_report.txt
     
-    - name: Upload pytest report as artifact
+    - name: Upload pytest report as artifact, as a txt file
       uses: actions/upload-artifact@v4
       with:
         name: pytest-test-report
-        path: test.txt
-        #path: test_report.xml        
+        path: test_report.txt
+    
+    - name: Download pytest report
+    - uses: actions/download-artifact@v5
+      with:
+        name: pytest-test-report
       
   
   build_and_push_job:
@@ -66,7 +70,7 @@ jobs:
     needs: test_job
 
     # custom condition so this job runs only if true test success because of continue-on-error: true
-    #if: ${{ needs.test_job.outputs.test_passed == 'success' }}
+    if: ${{ needs.test_job.result == 'success' }}
     #outputs:
      # # This maps the job output 'test_passed' to the step output 'test_result' 
       #true_test_status: ${{ steps.pytest.outputs }}
