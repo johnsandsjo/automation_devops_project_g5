@@ -107,30 +107,4 @@ jobs:
         push: true # flag to tell the action to push the image to Docker Hub
         tags: ${{ env.DOCKER_IMAGE }}:latest #hard coded latest tag for simplicity
 
-
-  #update_web_app:
-  #  name: "Job #3 - Update web app in Azure
-    #----------------------------------------------------------------------------------
-    #------------------------Job #3 - Update web app in Azure -------------------------
-    #----------------------------------------------------------------------------------
-  #  runs-on: ubuntu-latest
-  #  needs: build_and_push_job
-    
-  #  steps:
-  #  - name: azure login
-  #    uses: Azure/login@v2.3.0
-  #    with:
-        #Added this to Github secret recieved from running in the cli `az ad sp create-for-rbac`
-   #     creds: ${{ secrets.AZURE_CREDENTIALS }}
-   
-   # - name: Azure CLI Action
-   #   uses: Azure/cli@v2.2.0
-   #   with:
-   #     inlineScript: |
-   #       echo "Refreshing Azure app service automatically"
-   #       az webapp config container set \
-   #         --name weather-app \
-   #         --resource-group rg-devops-course \
-   #         --docker-custom-image-name johnsandsjo91826/jsg5_weather_app:latest \
-   #         --docker-registry-server-url https://index.docker.io/
-  
+        
