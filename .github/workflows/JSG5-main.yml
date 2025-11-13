@@ -25,6 +25,10 @@ jobs:
     #----------------------------JOB #1 - TEST RUN ------------------------------------
     #----------------------------------------------------------------------------------
     runs-on: ubuntu-latest
+    
+    outputs:
+      #creating output to steer build and push step
+      true_test_result: ${{ steps.set_status.outputs.test_outcome }}
       
     steps:
     - name: Checkout repo code
@@ -48,17 +52,18 @@ jobs:
         export PYTHONPATH=$PYTHONPATH:./ 
         # pytest command finds and execute files starting with 'test_' and save results to a xml file
         pytest > test_report.txt
+
+    - name: Set test status (custom step due to continue-on-error is true)
+      id: set_status
+      run: |
+        # Write the output from pytest step above
+        echo "test_outcome=${{ steps.pytest.outcome }}" >> $GITHUB_OUTPUT
     
     - name: Upload pytest report as artifact, as a txt file
       uses: actions/upload-artifact@v4
       with:
         name: pytest-test-report
         path: test_report.txt
-    
-    - name: Download pytest report
-      uses: actions/download-artifact@v5
-      with:
-        name: pytest-test-report
       
   
   build_and_push_job:
@@ -69,17 +74,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: test_job
 
-    # custom condition so this job runs only if true test success because of continue-on-error: true
-    if: ${{ needs.test_job.result == 'success' }}
-    #outputs:
-     # # This maps the job output 'test_passed' to the step output 'test_result' 
-      #true_test_status: ${{ steps.pytest.outputs }}
+    # custom condition so this job runs only if true test success 
+    # because of overwritten in continue-on-error is true step
+    if: ${{ needs.test_job.true_test_result == 'success' }}
     
     env:
     #name and path that the final built image in Docker Hub
       DOCKER_IMAGE: johnsandsjo91826/jsg5_weather_app
       DOCKERFILE_PATH: ./dockerfile
-
+      
     steps:
     - name: Checkout repo code
       uses: actions/checkout@v4
