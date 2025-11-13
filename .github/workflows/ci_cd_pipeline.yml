@@ -12,7 +12,6 @@ on:
         default: "false"
 
 jobs:
-  # 🧪 مرحله‌ی تست
   test:
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +33,6 @@ jobs:
           open_api_key: ${{ secrets.API_KEY }}
         run: pytest --maxfail=1 --disable-warnings -q
 
-  # 🐋 مرحله‌ی ساخت و Push ایمیج Docker به DockerHub
      build_and_push:
     runs-on: ubuntu-latest
     needs: test
