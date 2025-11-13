@@ -59,6 +59,7 @@ jobs:
       uses: dawidd6/action-send-mail@v6
       with:
         subject: Test report
+        from: Test runner
         to: ${{ secrets.EMAIL }}
         attachments: test_report.xml
       
