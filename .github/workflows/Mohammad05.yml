@@ -24,7 +24,7 @@ jobs:
     #
     runs-on: ubuntu-latest
     outputs:
-       test_passed: ${{ steps.pytest.outcome }}
+      test_passed: ${{ steps.pytest.outcome }}
 
 
     steps:
