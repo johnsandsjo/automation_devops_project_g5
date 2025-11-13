@@ -55,13 +55,13 @@ jobs:
         name: pytest-test-report
         path: test_report.xml
   
-    - name: Send email
-      uses: dawidd6/action-send-mail@v6
+    - name: Email Sender
+      uses: wesdevteam/maileraction@v1.2.3
       with:
+        to: $ {{ secrets.EMAIL}} 
         subject: Test report
-        from: Test runner
-        to: ${{ secrets.EMAIL }}
         attachments: test_report.xml
+          
       
   
   build_and_push_job:
