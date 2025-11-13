@@ -53,7 +53,15 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pytest-test-report
-        path: test-report.xml
+        path: test_report.xml
+  
+    - name: Send email
+      uses: dawidd6/action-send-mail@v6
+      with:
+        subject: Test report
+        to: ${{ secrets.EMAIL }}
+        attachments: test_report.xml
+      
   
   build_and_push_job:
     name: "Job #2 - Build and push docker image to Docker Hub"
