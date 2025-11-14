@@ -55,18 +55,18 @@ jobs:
         pytest --junitxml=reporty.xml
 
 
-    #- name: Print test result
-      #if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_tests == 'true' && steps.pytest.outcome == 'failure' }}
-      #run: |
-        #echo "Test failed, generating report"
+    - name: Print test result
+      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_tests == 'true' && steps.pytest.outcome == 'failure' }}
+      run: |
+        echo "Test failed, generating report"
         #create a folder to save the reports (idempotent with -p)
-        #mkdir -p test_reports_dir
+        mkdir -p test_reports_dir
         #move the pytest xml report to the created folder
-        #if [ -f reporty.xml ]; then
-         # mv reporty.xml test_reports_dir/
-        #else
-          #echo "reporty.xml not found."
-        #fi
+        if [ -f reporty.xml ]; then
+          mv reporty.xml test_reports_dir/
+        else
+          echo "reporty.xml not found."
+        fi
 
     - name: Upload Test Report Artifact
       if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_tests == 'true' && steps.pytest.outcome == 'failure' }}
