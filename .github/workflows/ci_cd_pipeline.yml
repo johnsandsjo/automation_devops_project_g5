@@ -79,32 +79,4 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
           platforms: linux/amd64
-  deploy_to_azure:
-    name: Deploy to Azure Web App
-    runs-on: ubuntu-latest
-    needs: build_and_push
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Login to Azure with publish profile
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-         creds: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-
-      # Deploy to Azure Web App
-      - name: Deploy Docker image to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-         images: ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
-
-
-
-      - name: Deploy Docker image to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.DOCKER_USERNAME }}/flask_app:latest
+  
