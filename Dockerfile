@@ -2,15 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt /app/requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
-
-ENV FLASK_APP=weather_app.app
-ENV FLASK_RUN_PORT=5000
-ENV FLASK_RUN_HOST=0.0.0.0
+COPY . .
 
 EXPOSE 5000
 
-CMD ["flask", "run"]
+CMD ["flask", "--app", "weather_app.app", "run", "--host", "0.0.0.0", "--port", "5000"]

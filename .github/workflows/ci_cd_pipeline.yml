@@ -3,7 +3,7 @@ name: HY Individual DevOps Pipeline
 on:
   push:
     branches:
-      - KH_individual
+      - main
   workflow_dispatch:
     inputs:
       create_log:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Run tests
         env:
-          open_api_key: ${{ secrets.API_KEY }}
+          OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
         run: pytest --maxfail=1 --disable-warnings -q
       - name: Debug Docker username
         run: |
