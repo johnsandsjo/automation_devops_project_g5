@@ -50,6 +50,7 @@ jobs:
       id: pytest
       continue-on-error: true
       run: |
+        export OPEN_API_KEY=${{ secrets.OPEN_API_KEY }}
         # making sure pytest finds the root and path to weather_app
         export PYTHONPATH=$PYTHONPATH:./ 
         pytest --junitxml=reporty.xml
